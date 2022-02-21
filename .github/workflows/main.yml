@@ -18,11 +18,11 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            cd backend-app-archive && mv RestService-0.0.1.jar "RestService-$(date +%Y%m%d%H%M%S).jar" && cd
+            cd /root/backend-app-archive && mv RestService-0.0.1.jar "RestService-$(date +%Y%m%d%H%M%S).jar" && cd
             cd repositories/sample-app-backend
             git pull
             git log --name-status HEAD^..HEAD >> /root/backend-app-release-notes/Release-$(date +%Y%m%d%H%M%S).txt
-            mvn clean install
+            mvn install
             cp -a /root/repositories/sample-app-backend/target/. /root/backend-app-archive/
             ps -ef | grep RestService-0.0.1.jar | grep -v grep | awk '{print $2}' | xargs kill && cd /root/backend-app-archive/
             nohup java -jar -Xmx256m -Xms128m *.jar > /dev/null 2>&1 &
