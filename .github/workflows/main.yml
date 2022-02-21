@@ -19,7 +19,7 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /root/backend-app-archive && mv *.jar "RestService-$(date +%Y%m%d%H%M%S).jar" && cd
-            cd repositories/sample-app-backend
+            cd /root/repositories/sample-app-backend
             git pull
             git log --name-status HEAD^..HEAD >> /root/backend-app-release-notes/Release-$(date +%Y%m%d%H%M%S).txt
             mvn install
