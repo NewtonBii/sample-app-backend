@@ -24,6 +24,6 @@ jobs:
             git log --name-status HEAD^..HEAD >> /root/backend-app-release-notes/Release-$(date +%Y%m%d%H%M%S).txt
             mvn install
             cp -a /root/repositories/sample-app-backend/target/*.jar /root/backend-app-archive/
-            ps -ef | grep RestService-0.0.1.jar | grep -v grep | awk '{print $2}' | xargs kill
+            kill -9 $(ps -ef | grep "RestService-0.0.1.jar" | grep -v grep | awk '{print $2}')
             cd /root/backend-app-archive/
             nohup java -jar -Xmx256m -Xms128m RestService-0.0.1.jar > /dev/null 2>&1 &
