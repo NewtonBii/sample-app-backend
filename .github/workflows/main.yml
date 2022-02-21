@@ -1,36 +1,28 @@
-# This is a basic workflow to help you get started with Actions
+name: CI/CD Pipeline
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches:
+      - 'main'
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
+    name: Build
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+      - name: Deploy to Digital Ocean
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd backend-app-archive && mv RestService-0.0.1.jar "RestService-$(date +%Y%m%d%H%M%S).jar" && cd
+            cd repositories/sample-app-backend
+            git pull
+            git log --name-status HEAD^..HEAD >> /root/backend-app-release-notes/Release-$(date +%Y%m%d%H%M%S).txt
+            mvn clean install
+            cp -a /root/repositories/sample-app-backend/target/. /root/backend-app-archive/
+            ps -ef | grep RestService-0.0.1.jar | grep -v grep | awk '{print $2}' | xargs kill && cd /root/backend-app-archive/
+            nohup java -jar -Xmx256m -Xms128m *.jar > /dev/null 2>&1 &

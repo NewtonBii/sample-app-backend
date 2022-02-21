@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.yhink</groupId>
 	<artifactId>RestService</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>RestService</name>
 	<description>Demo project cicd pipeline using github action</description>
 	<properties>
